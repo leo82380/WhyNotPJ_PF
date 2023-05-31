@@ -4,18 +4,22 @@ using UnityEngine;
 
 public class Skeleton_Move : MonoBehaviour
 {
-    [SerializeField] float speed = 3;
     Animator skeleton_anime;
+    SpriteRenderer sprite;
+
+    [SerializeField] float speed = 3;
+    [SerializeField] int rd;
+
     [SerializeField] bool isWalk;
     [SerializeField] bool isAttack;
     [SerializeField] bool isHit;
     [SerializeField] bool isRect;
     [SerializeField] bool isDead;
-    [SerializeField] int rd;
     // Start is called before the first frame update
     void Start()
     {
         skeleton_anime = GetComponent<Animator>();
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -34,10 +38,12 @@ public class Skeleton_Move : MonoBehaviour
             {
                 case 0:
                     transform.position += Vector3.right * Time.deltaTime * speed;
+                    sprite.flipX = false;
                     skeleton_anime.SetBool("isWalk", true);
                     break;
                 case 1:
                     transform.position += Vector3.left * Time.deltaTime * speed;
+                    sprite.flipX = true;
                     skeleton_anime.SetBool("isWalk", true);
                     break;
             }
