@@ -50,3 +50,6 @@ TagManager:
   - name: Player
     uniqueID: 2812113897
     locked: 0
+  - name: Pet
+    uniqueID: 2637237523
+    locked: 0
