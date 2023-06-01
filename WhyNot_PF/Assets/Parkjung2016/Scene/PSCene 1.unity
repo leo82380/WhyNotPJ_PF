@@ -3544,22 +3544,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976489, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976491, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_SortingLayer
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976491, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_SortingOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976491, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1482853399
-      objectReference: {fileID: 0}
     - target: {fileID: 8136768084226976500, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -3603,18 +3587,6 @@ PrefabInstance:
     - target: {fileID: 8136768084226976500, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976503, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_Mass
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976503, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_BodyType
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8136768084226976503, guid: 7f6141cb71448f541b35b1850965870f, type: 3}
-      propertyPath: m_Constraints
-      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f6141cb71448f541b35b1850965870f, type: 3}

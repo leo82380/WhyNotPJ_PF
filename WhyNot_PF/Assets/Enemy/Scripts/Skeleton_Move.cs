@@ -7,20 +7,20 @@ public class Skeleton_Move : MonoBehaviour
     Animator skeleton_anime;
     SpriteRenderer sprite;
     Transform player;
-    [SerializeField] float speed = 3;
+    [SerializeField] float speed = 2;
     [SerializeField] int rd;
-
+    [SerializeField] int far;
     [SerializeField] bool isWalk;
     [SerializeField] bool isAttack;
     [SerializeField] bool isHit;
     [SerializeField] bool isRect;
     [SerializeField] bool isDead;
     [SerializeField] bool ismove;
-
+    
     Vector3 dir;
     void Start()
     {
-        player = FindObjectOfType<Transform>();
+        player = FindObjectOfType<PlayerController>().transform;
         skeleton_anime = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         StartCoroutine(Moving());
@@ -32,19 +32,7 @@ public class Skeleton_Move : MonoBehaviour
         {
             int rdAct = Random.Range(0, 100);
 
-            if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= 1)
-            {
-                if (transform.position.x < player.position.x)
-                {
-                    sprite.flipX = false;
-                }
-                else
-                {
-                    sprite.flipX = true;
-                }
-                isAttack = true;
-                Attack();
-            }
+            
             Hit();
             if (rdAct < 50)
             {
@@ -64,6 +52,23 @@ public class Skeleton_Move : MonoBehaviour
     private void Update()
     {
         transform.position += dir * Time.deltaTime * speed;
+        AttacCheck();
+    }
+    void AttacCheck()
+    {
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
+        {
+            if (transform.position.x < player.position.x)
+            {
+                sprite.flipX = false;
+            }
+            else
+            {
+                sprite.flipX = true;
+            }
+            isAttack = true;
+            Attack();
+        }
     }
     void Attack()
     {
