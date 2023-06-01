@@ -6,21 +6,25 @@ public class Skeleton_Move : MonoBehaviour
 {
     Animator skeleton_anime;
     SpriteRenderer sprite;
-    Transform player;
+    Transform playerpos;
+    PlayerController player;
     [SerializeField] float speed = 2;
     [SerializeField] int rd;
     [SerializeField] int far;
-    [SerializeField] bool isWalk;
-    [SerializeField] bool isAttack;
-    [SerializeField] bool isHit;
-    [SerializeField] bool isRect;
-    [SerializeField] bool isDead;
-    [SerializeField] bool ismove;
-    
+    int hitCount;
+    bool isWalk;
+    bool isAttack;
+    bool isHit;
+    bool isRect;
+    bool isDead;
+    bool ismove;
+    bool isCount;
     Vector3 dir;
     void Start()
     {
-        player = FindObjectOfType<PlayerController>().transform;
+        hitCount = 3;
+        playerpos = FindObjectOfType<PlayerController>().transform;
+        player = FindObjectOfType<PlayerController>();
         skeleton_anime = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         StartCoroutine(Moving());
@@ -54,11 +58,25 @@ public class Skeleton_Move : MonoBehaviour
         transform.position += dir * Time.deltaTime * speed;
         AttacCheck();
     }
+    void DeadCheck()
+    {
+        hitCount--;
+        isCount = false;
+            
+        Debug.Log(hitCount);
+        isHit = true;
+        Hit();
+        if(hitCount <= 0)
+        {
+            isDead = true;
+            Dead();
+        }
+    }
     void AttacCheck()
     {
         if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
         {
-            if (transform.position.x < player.position.x)
+            if (transform.position.x < playerpos.position.x)
             {
                 sprite.flipX = false;
             }
@@ -161,5 +179,13 @@ public class Skeleton_Move : MonoBehaviour
     void SkeletonDie()
     {
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            DeadCheck();
+        }
     }
 }
