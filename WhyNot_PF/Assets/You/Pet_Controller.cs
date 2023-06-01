@@ -13,10 +13,10 @@ public class Pet_Controller : MonoBehaviour
     {
         ani = GetComponent<Animator>();
         ParentPlayer = GameObject.FindWithTag("Player").transform;
-        ChildPlayer = ParentPlayer.GetChild(2);
+        ChildPlayer = ParentPlayer.GetChild(1);
     }
 
-    
+
     void Update()
     {
         transform.position = Vector3.MoveTowards(transform.position, ChildPlayer.position, Speed);
