@@ -58,6 +58,7 @@ public class Skeleton_Move : MonoBehaviour
         transform.position += dir * Time.deltaTime * speed;
         AttacCheck();
     }
+
     void DeadCheck()
     {
         hitCount--;
@@ -72,6 +73,7 @@ public class Skeleton_Move : MonoBehaviour
             Dead();
         }
     }
+
     void AttacCheck()
     {
         if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
@@ -88,6 +90,7 @@ public class Skeleton_Move : MonoBehaviour
             Attack();
         }
     }
+
     void Attack()
     {
         if (isAttack == true)
@@ -96,6 +99,7 @@ public class Skeleton_Move : MonoBehaviour
             Invoke("EndAttack", 1.07f);
         }
     }
+
     void EndAttack()
     {
         skeleton_anime.SetBool("isAttack", false);
@@ -109,6 +113,7 @@ public class Skeleton_Move : MonoBehaviour
             StartCoroutine("Walking");
         }
     }
+    
     IEnumerator Walking()
     {
         ismove = true;
