@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack1
+  m_Name: AirAttacking
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,18 +20,16 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 613595889, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - time: 0.125
-      value: {fileID: -98434188, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - time: 0.25
-      value: {fileID: -806437524, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - time: 0.5
-      value: {fileID: -806437524, guid: cfe8a3f04472859458fef385316810ec, type: 3}
+      value: {fileID: 1266789049, guid: 53bac893f30d72846a7630923bc83021, type: 3}
+    - time: 0.3
+      value: {fileID: 887793144, guid: 53bac893f30d72846a7630923bc83021, type: 3}
+    - time: 0.4
+      value: {fileID: -1796436380, guid: 53bac893f30d72846a7630923bc83021, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
-  m_SampleRate: 8
+  m_SampleRate: 10
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -46,16 +44,15 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 613595889, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - {fileID: -98434188, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - {fileID: -806437524, guid: cfe8a3f04472859458fef385316810ec, type: 3}
-    - {fileID: -806437524, guid: cfe8a3f04472859458fef385316810ec, type: 3}
+    - {fileID: 1266789049, guid: 53bac893f30d72846a7630923bc83021, type: 3}
+    - {fileID: 887793144, guid: 53bac893f30d72846a7630923bc83021, type: 3}
+    - {fileID: -1796436380, guid: 53bac893f30d72846a7630923bc83021, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.625
+    m_StopTime: 0.5
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -76,35 +73,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: AttackBuffer
+    functionName: AirAttackReady
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0
-    functionName: EnableAttackCol
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.25
-    functionName: Combo
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.375
-    functionName: DisableAttackCol
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.5
-    functionName: ResetAttack
+  - time: 0.3
+    functionName: AirAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
