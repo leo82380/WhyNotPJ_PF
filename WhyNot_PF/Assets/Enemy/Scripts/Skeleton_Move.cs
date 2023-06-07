@@ -4,23 +4,29 @@ using UnityEngine;
 
 public class Skeleton_Move : MonoBehaviour
 {
+    Vector3 dir;
     Animator skeleton_anime;
     SpriteRenderer sprite;
     Transform playerpos;
     PlayerController player;
     CircleCollider2D attackCollider;
+    Rigidbody2D rigid;
+
+    [Header("속도")]
     [SerializeField] float speed = 2;
-    [SerializeField] int rd;
+    int rd;
+    [Header("거리")]
     [SerializeField] int far;
     int hitCount;
+    int nextMove;
+    int look = 1;
+
     bool isWalk;
     bool isAttack;
     bool isHit;
     bool isRect;
     bool isDead;
     bool ismove;
-    bool isCount;
-    Vector3 dir;
     void Start()
     {
         hitCount = 3;
@@ -29,15 +35,27 @@ public class Skeleton_Move : MonoBehaviour
         skeleton_anime = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         attackCollider = GetComponentInChildren<CircleCollider2D>();
+        rigid = GetComponent<Rigidbody2D>();
         attackCollider.enabled = false;
-        StartCoroutine(Moving());
+        StartCoroutine("Moving");
     }
     private void Update()
     {
         transform.position += dir * Time.deltaTime * speed;
         AttackCheck();
-    }
 
+        Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
+
+        Debug.DrawRay(frontVec, Vector3.down, new Color(0, 1, 0));
+        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));
+        if (rayHit.collider == null)
+        {
+            isWalk = false;
+            look *= -1;
+            
+        }
+    }
+    
     IEnumerator Moving()
     {
         while (true)
@@ -64,7 +82,6 @@ public class Skeleton_Move : MonoBehaviour
     void DeadCheck()
     {
         hitCount--;
-        isCount = false;
             
         Debug.Log(hitCount);
         isHit = true;
@@ -123,10 +140,10 @@ public class Skeleton_Move : MonoBehaviour
         switch (rd)
         {
             case 0:
-                Move(1, false);
+                Move(look, false);
                 break;
             case 1:
-                Move(-1, true);
+                Move(-look, true);
                 break;
         }
     }
