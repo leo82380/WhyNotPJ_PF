@@ -195,17 +195,17 @@ public class Skeleton_Move : MonoBehaviour
         if (isDead == true)
         {
             skeleton_anime.SetTrigger("OnDie");
-            Invoke("SkeletonDie", 1.2f);
+            dir = Vector3.zero;
         }
     }
-    void SkeletonDie()
+    public void SkeletonDie()
     {
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("PlayerWeapon"))
         {
             DeadCheck();
         }

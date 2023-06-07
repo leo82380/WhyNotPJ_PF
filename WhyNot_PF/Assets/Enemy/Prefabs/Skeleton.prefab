@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2619725176166233607}
   m_Layer: 6
   m_Name: Attack
-  m_TagString: Untagged
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -187,7 +187,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  rd: 0
   far: 2
 --- !u!50 &8136768084226976503
 Rigidbody2D:
