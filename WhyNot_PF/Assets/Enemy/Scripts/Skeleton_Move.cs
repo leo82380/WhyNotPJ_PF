@@ -6,24 +6,36 @@ public class Skeleton_Move : MonoBehaviour
 {
     Animator skeleton_anime;
     SpriteRenderer sprite;
-    Transform player;
+    Transform playerpos;
+    PlayerController player;
+    CircleCollider2D attackCollider;
     [SerializeField] float speed = 2;
     [SerializeField] int rd;
     [SerializeField] int far;
-    [SerializeField] bool isWalk;
-    [SerializeField] bool isAttack;
-    [SerializeField] bool isHit;
-    [SerializeField] bool isRect;
-    [SerializeField] bool isDead;
-    [SerializeField] bool ismove;
-    
+    int hitCount;
+    bool isWalk;
+    bool isAttack;
+    bool isHit;
+    bool isRect;
+    bool isDead;
+    bool ismove;
+    bool isCount;
     Vector3 dir;
     void Start()
     {
-        player = FindObjectOfType<PlayerController>().transform;
+        hitCount = 3;
+        playerpos = FindObjectOfType<PlayerController>().transform;
+        player = FindObjectOfType<PlayerController>();
         skeleton_anime = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
+        attackCollider = GetComponentInChildren<CircleCollider2D>();
+        attackCollider.enabled = false;
         StartCoroutine(Moving());
+    }
+    private void Update()
+    {
+        transform.position += dir * Time.deltaTime * speed;
+        AttackCheck();
     }
 
     IEnumerator Moving()
@@ -34,12 +46,12 @@ public class Skeleton_Move : MonoBehaviour
 
             
             Hit();
-            if (rdAct < 50)
+            if (rdAct < 80)
             {
                 isWalk = true;
                 Walk();
             }
-            if (rdAct > 50 && rdAct < 60)
+            if (rdAct > 80 && rdAct < 100)
             {
                 isRect = true;
                 Rect();
@@ -49,16 +61,26 @@ public class Skeleton_Move : MonoBehaviour
         }
         
     }
-    private void Update()
+    void DeadCheck()
     {
-        transform.position += dir * Time.deltaTime * speed;
-        AttacCheck();
+        hitCount--;
+        isCount = false;
+            
+        Debug.Log(hitCount);
+        isHit = true;
+        Hit();
+        if(hitCount <= 0)
+        {
+            isDead = true;
+            Dead();
+        }
     }
-    void AttacCheck()
+    void AttackCheck()
     {
         if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
         {
-            if (transform.position.x < player.position.x)
+            Attack();
+            if (transform.position.x < playerpos.position.x)
             {
                 sprite.flipX = false;
             }
@@ -66,20 +88,20 @@ public class Skeleton_Move : MonoBehaviour
             {
                 sprite.flipX = true;
             }
-            isAttack = true;
-            Attack();
         }
     }
     void Attack()
     {
-        if (isAttack == true)
+        if (!isAttack)
         {
             skeleton_anime.SetBool("isAttack", true);
-            Invoke("EndAttack", 1.07f);
+            attackCollider.enabled = true;
+            isAttack = true;
         }
     }
-    void EndAttack()
+    public void EndAttack()
     {
+        attackCollider.enabled = false;
         skeleton_anime.SetBool("isAttack", false);
         isAttack = false;
     }
@@ -91,6 +113,7 @@ public class Skeleton_Move : MonoBehaviour
             StartCoroutine("Walking");
         }
     }
+
     IEnumerator Walking()
     {
         ismove = true;
@@ -100,20 +123,20 @@ public class Skeleton_Move : MonoBehaviour
         switch (rd)
         {
             case 0:
-                dir = Vector2.right;
-                sprite.flipX = false;
-                skeleton_anime.SetBool("isWalk", true);
-                StartCoroutine("StopWalk");
+                Move(1, false);
                 break;
             case 1:
-                dir = Vector2.right * -1;
-                sprite.flipX = true;
-                skeleton_anime.SetBool("isWalk", true);
-                StartCoroutine("StopWalk");
+                Move(-1, true);
                 break;
         }
     }
-
+    void Move(int direction, bool isLeft)
+    {
+        dir = Vector2.right * direction;
+        sprite.flipX = isLeft;
+        skeleton_anime.SetBool("isWalk", true);
+        StartCoroutine("StopWalk");
+    }
     IEnumerator StopWalk()
     {
         yield return StartCoroutine("Walking");
@@ -160,6 +183,14 @@ public class Skeleton_Move : MonoBehaviour
     }
     void SkeletonDie()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            DeadCheck();
+        }
     }
 }
