@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Skeleton_Move : MonoBehaviour
 {
-    Vector3 dir;
+    public Vector3 dir;
     Animator skeleton_anime;
     SpriteRenderer sprite;
     Transform playerpos;
@@ -19,7 +20,7 @@ public class Skeleton_Move : MonoBehaviour
     [SerializeField] int far;
     int hitCount;
     int nextMove;
-    int look = 1;
+    public int look = 1;
 
     bool isWalk;
     bool isAttack;
@@ -29,6 +30,7 @@ public class Skeleton_Move : MonoBehaviour
     bool ismove;
     void Start()
     {
+        nextMove = 1;
         hitCount = 3;
         playerpos = FindObjectOfType<PlayerController>().transform;
         player = FindObjectOfType<PlayerController>();
@@ -46,13 +48,16 @@ public class Skeleton_Move : MonoBehaviour
 
         Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
 
-        Debug.DrawRay(frontVec, Vector3.down, new Color(0, 1, 0));
-        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));
+        Debug.DrawRay(frontVec, Vector3.down, new Color(1, 0, 0));
+        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1.5f, LayerMask.GetMask("Platform"));
         if (rayHit.collider == null)
         {
             isWalk = false;
             look *= -1;
-            
+            dir = Vector2.right * look;
+            sprite.flipX = !sprite.flipX;
+            skeleton_anime.SetBool("isWalk", true);
+            nextMove = look;
         }
     }
     
@@ -60,10 +65,7 @@ public class Skeleton_Move : MonoBehaviour
     {
         while (true)
         {
-            int rdAct = Random.Range(0, 100);
-
-            
-            Hit();
+            int rdAct = UnityEngine.Random.Range(0, 100);
             if (rdAct < 80)
             {
                 isWalk = true;
@@ -74,7 +76,6 @@ public class Skeleton_Move : MonoBehaviour
                 isRect = true;
                 Rect();
             }
-            Dead();
             yield return new WaitForSeconds(5);
         }
         
@@ -82,7 +83,17 @@ public class Skeleton_Move : MonoBehaviour
     void DeadCheck()
     {
         hitCount--;
-            
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
+        {
+            if (transform.position.x < playerpos.position.x)
+            {
+                sprite.flipX = false;
+            }
+            else
+            {
+                sprite.flipX = true;
+            }
+        }
         Debug.Log(hitCount);
         isHit = true;
         Hit();
@@ -134,16 +145,18 @@ public class Skeleton_Move : MonoBehaviour
     IEnumerator Walking()
     {
         ismove = true;
-        int time = Random.Range(5, 10);
+        int time = UnityEngine.Random.Range(10, 20);
         yield return new WaitForSeconds(time);
-        rd = Random.Range(0, 2);
+        rd = UnityEngine.Random.Range(0, 2);
         switch (rd)
         {
             case 0:
+                look = 1;
                 Move(look, false);
                 break;
             case 1:
-                Move(-look, true);
+                look = -1;
+                Move(look, true);
                 break;
         }
     }
@@ -152,6 +165,7 @@ public class Skeleton_Move : MonoBehaviour
         dir = Vector2.right * direction;
         sprite.flipX = isLeft;
         skeleton_anime.SetBool("isWalk", true);
+        nextMove = direction;
         StartCoroutine("StopWalk");
     }
     IEnumerator StopWalk()
