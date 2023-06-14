@@ -55,3 +55,6 @@ TagManager:
   - name: Pet
     uniqueID: 2637237523
     locked: 0
+  - name: Enemy
+    uniqueID: 3248522473
+    locked: 0

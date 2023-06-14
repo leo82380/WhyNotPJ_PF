@@ -24,10 +24,8 @@ public class Skeleton_Move : MonoBehaviour
 
     bool isWalk;
     bool isAttack;
-    bool isHit;
-    bool isRect;
     bool isDead;
-    bool ismove;
+    bool isMove;
     void Start()
     {
         nextMove = 1;
@@ -48,8 +46,8 @@ public class Skeleton_Move : MonoBehaviour
 
         Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
 
-        Debug.DrawRay(frontVec, Vector3.down, new Color(1, 0, 0));
-        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 1.5f, LayerMask.GetMask("Platform"));
+        Debug.DrawRay(frontVec, Vector3.down * 10, new Color(1, 0, 0));
+        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 10f, LayerMask.GetMask("Ground"));
         if (rayHit.collider == null)
         {
             isWalk = false;
@@ -73,7 +71,6 @@ public class Skeleton_Move : MonoBehaviour
             }
             if (rdAct > 80 && rdAct < 100)
             {
-                isRect = true;
                 Rect();
             }
             yield return new WaitForSeconds(5);
@@ -95,7 +92,6 @@ public class Skeleton_Move : MonoBehaviour
             }
         }
         Debug.Log(hitCount);
-        isHit = true;
         Hit();
         if(hitCount <= 0)
         {
@@ -136,7 +132,7 @@ public class Skeleton_Move : MonoBehaviour
 
     void Walk()
     {
-        if (isWalk == true && ismove == false)
+        if (isWalk == true && isMove == false)
         {
             StartCoroutine("Walking");
         }
@@ -144,10 +140,10 @@ public class Skeleton_Move : MonoBehaviour
 
     IEnumerator Walking()
     {
-        ismove = true;
+        isMove = true;
         int time = UnityEngine.Random.Range(10, 20);
-        yield return new WaitForSeconds(time);
         rd = UnityEngine.Random.Range(0, 2);
+        yield return new WaitForSeconds(time);
         switch (rd)
         {
             case 0:
@@ -162,46 +158,38 @@ public class Skeleton_Move : MonoBehaviour
     }
     void Move(int direction, bool isLeft)
     {
+        StartCoroutine("StopWalk");
         dir = Vector2.right * direction;
         sprite.flipX = isLeft;
         skeleton_anime.SetBool("isWalk", true);
         nextMove = direction;
-        StartCoroutine("StopWalk");
     }
     IEnumerator StopWalk()
     {
         yield return StartCoroutine("Walking");
         dir = Vector2.zero;
-        ismove = false;
+        isMove = false;
         transform.position += Vector3.zero;
         skeleton_anime.SetBool("isWalk", false);
     }
     void Hit()
     {
-        if (isHit == true)
-        {
             skeleton_anime.SetBool("isHit", true);
             Invoke("EndHit", 0.7f);
-        }
     }
     void EndHit()
     {
         skeleton_anime.SetBool("isHit", false);
-        isHit = false;
     }
 
     void Rect()
     {
-        if (isRect == true)
-        {
-            skeleton_anime.SetBool("isRect", true);
-            Invoke("EndRect", 0.7f);
-        }
+        skeleton_anime.SetBool("isRect", true);
+        Invoke("EndRect", 0.7f);
     }
     void EndRect()
     {
         skeleton_anime.SetBool("isRect", false);
-        isRect = false;
     }
 
     void Dead()
