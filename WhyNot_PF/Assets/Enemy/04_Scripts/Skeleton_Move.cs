@@ -1,51 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Skeleton_Move : MonoBehaviour
 {
+    public Vector3 dir;
     Animator skeleton_anime;
     SpriteRenderer sprite;
     Transform playerpos;
     PlayerController player;
     CircleCollider2D attackCollider;
+    Rigidbody2D rigid;
+
+    [Header("속도")]
     [SerializeField] float speed = 2;
-    [SerializeField] int rd;
+    int rd;
+    [Header("거리")]
     [SerializeField] int far;
     int hitCount;
+    int nextMove;
+    public int look = 1;
+
     bool isWalk;
     bool isAttack;
-    bool isHit;
-    bool isRect;
     bool isDead;
-    bool ismove;
-    bool isCount;
-    Vector3 dir;
+    bool isMove;
     void Start()
     {
+        nextMove = 1;
         hitCount = 3;
         playerpos = FindObjectOfType<PlayerController>().transform;
         player = FindObjectOfType<PlayerController>();
         skeleton_anime = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         attackCollider = GetComponentInChildren<CircleCollider2D>();
+        rigid = GetComponent<Rigidbody2D>();
         attackCollider.enabled = false;
-        StartCoroutine(Moving());
+        StartCoroutine("Moving");
     }
     private void Update()
     {
         transform.position += dir * Time.deltaTime * speed;
         AttackCheck();
-    }
 
+        Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
+
+        Debug.DrawRay(frontVec, Vector3.down * 10, new Color(1, 0, 0));
+        RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 10f, LayerMask.GetMask("Ground"));
+        if (rayHit.collider == null)
+        {
+            isWalk = false;
+            look *= -1;
+            dir = Vector2.right * look;
+            sprite.flipX = !sprite.flipX;
+            skeleton_anime.SetBool("isWalk", true);
+            nextMove = look;
+        }
+    }
+    
     IEnumerator Moving()
     {
         while (true)
         {
-            int rdAct = Random.Range(0, 100);
-
-            
-            Hit();
+            int rdAct = UnityEngine.Random.Range(0, 100);
             if (rdAct < 80)
             {
                 isWalk = true;
@@ -53,10 +71,8 @@ public class Skeleton_Move : MonoBehaviour
             }
             if (rdAct > 80 && rdAct < 100)
             {
-                isRect = true;
                 Rect();
             }
-            Dead();
             yield return new WaitForSeconds(5);
         }
         
@@ -64,10 +80,18 @@ public class Skeleton_Move : MonoBehaviour
     void DeadCheck()
     {
         hitCount--;
-        isCount = false;
-            
+        if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
+        {
+            if (transform.position.x < playerpos.position.x)
+            {
+                sprite.flipX = false;
+            }
+            else
+            {
+                sprite.flipX = true;
+            }
+        }
         Debug.Log(hitCount);
-        isHit = true;
         Hit();
         if(hitCount <= 0)
         {
@@ -108,7 +132,7 @@ public class Skeleton_Move : MonoBehaviour
 
     void Walk()
     {
-        if (isWalk == true && ismove == false)
+        if (isWalk == true && isMove == false)
         {
             StartCoroutine("Walking");
         }
@@ -116,61 +140,56 @@ public class Skeleton_Move : MonoBehaviour
 
     IEnumerator Walking()
     {
-        ismove = true;
-        int time = Random.Range(5, 10);
+        isMove = true;
+        int time = UnityEngine.Random.Range(10, 20);
+        rd = UnityEngine.Random.Range(0, 2);
         yield return new WaitForSeconds(time);
-        rd = Random.Range(0, 2);
         switch (rd)
         {
             case 0:
-                Move(1, false);
+                look = 1;
+                Move(look, false);
                 break;
             case 1:
-                Move(-1, true);
+                look = -1;
+                Move(look, true);
                 break;
         }
     }
     void Move(int direction, bool isLeft)
     {
+        StartCoroutine("StopWalk");
         dir = Vector2.right * direction;
         sprite.flipX = isLeft;
         skeleton_anime.SetBool("isWalk", true);
-        StartCoroutine("StopWalk");
+        nextMove = direction;
     }
     IEnumerator StopWalk()
     {
         yield return StartCoroutine("Walking");
         dir = Vector2.zero;
-        ismove = false;
+        isMove = false;
         transform.position += Vector3.zero;
         skeleton_anime.SetBool("isWalk", false);
     }
     void Hit()
     {
-        if (isHit == true)
-        {
             skeleton_anime.SetBool("isHit", true);
             Invoke("EndHit", 0.7f);
-        }
     }
     void EndHit()
     {
         skeleton_anime.SetBool("isHit", false);
-        isHit = false;
     }
 
     void Rect()
     {
-        if (isRect == true)
-        {
-            skeleton_anime.SetBool("isRect", true);
-            Invoke("EndRect", 0.7f);
-        }
+        skeleton_anime.SetBool("isRect", true);
+        Invoke("EndRect", 0.7f);
     }
     void EndRect()
     {
         skeleton_anime.SetBool("isRect", false);
-        isRect = false;
     }
 
     void Dead()
@@ -178,17 +197,17 @@ public class Skeleton_Move : MonoBehaviour
         if (isDead == true)
         {
             skeleton_anime.SetTrigger("OnDie");
-            Invoke("SkeletonDie", 1.2f);
+            dir = Vector3.zero;
         }
     }
-    void SkeletonDie()
+    public void SkeletonDie()
     {
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("PlayerWeapon"))
         {
             DeadCheck();
         }

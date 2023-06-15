@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerWeapon
+  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -13,7 +14,7 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - 
+  - Platform
   - 
   - 
   - 
@@ -53,4 +54,7 @@ TagManager:
     locked: 0
   - name: Pet
     uniqueID: 2637237523
+    locked: 0
+  - name: Enemy
+    uniqueID: 3248522473
     locked: 0
