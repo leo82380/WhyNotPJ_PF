@@ -1260,7 +1260,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413225564}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.10502678, y: -0.14999002, z: -9.970732}
+  m_LocalPosition: {x: -0.10502911, y: -0.14999002, z: -9.970732}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1411,7 +1411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
-  m_AmplitudeGain: 0
+  m_AmplitudeGain: 0.05039865
   m_FrequencyGain: 1
   mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1001 &608719513
@@ -5032,6 +5032,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 471862570224884849, guid: bb2d51754cf764e4e9b0ae8cb20801f0, type: 3}
+      propertyPath: slopCheckDis
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 471862570224884851, guid: bb2d51754cf764e4e9b0ae8cb20801f0, type: 3}
       propertyPath: m_RootOrder
       value: 8

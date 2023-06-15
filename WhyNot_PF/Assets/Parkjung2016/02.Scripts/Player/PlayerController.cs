@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 colliderSize;
     private Vector2 slopeNormalPerp;
     private float slopeDownAngle;
+    private float slopeDownAngleOld;
+    private bool isOnSleep;
     #endregion
 
     private void Awake()
@@ -113,7 +115,7 @@ public class PlayerController : MonoBehaviour
         Anim();
         AttackCheck();
         SlideCheck();
-        SlopCheck();
+        //SlopCheck();
     }
     private void SlideCheck()
     {
@@ -180,25 +182,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void SlopCheck()
-    {
-        Vector2 checkPos = transform.position - new Vector3(0.0f, colliderSize.y / 2);
+    //private void SlopCheck()
+    //{
+    //    Vector2 checkPos = transform.position - new Vector3(0.0f, colliderSize.y / 2);
 
-        SlopeCheckVertical(checkPos);
-    }
-    private void SlopeCheckVertical(Vector2 checkPos)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, slopCheckDis, _groundCheckLayerMask);
+    //    SlopeCheckVertical(checkPos);
+    //}
+    //private void SlopeCheckVertical(Vector2 checkPos)
+    //{
+    //    RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, slopCheckDis, _groundCheckLayerMask);
 
-        if(hit)
-        {
-            slopeNormalPerp = Vector2.Perpendicular(hit.normal);
+    //    if(hit)
+    //    {
+    //        slopeNormalPerp = Vector2.Perpendicular(hit.normal);
 
-            slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
-            Debug.DrawRay(hit.point, slopeNormalPerp, Color.green);
+    //        slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
 
-        }
-    }
+    //        if(slopeDownAngle != slopeDownAngleOld)
+    //        {
+    //            isOnSleep = true;
+    //        }
+    //        slopeDownAngleOld = slopeDownAngle;
+    //        Debug.DrawRay(hit.point, slopeNormalPerp, Color.green);
+
+    //    }
+    //}
     private void AttackCheck()
     {
         if (Input.GetKeyDown(KeyCode.Z) && !Rolling &&!_sliding)
@@ -279,13 +287,15 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        _hor = Input.GetAxisRaw("Horizontal");
         if (_airAttackReady) _rb2D.velocity = Vector2.zero;
         if (!_isMoveTrue || _sliding) return;
 
-        _hor = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(_hor * _speed, 0);
 
         _rb2D.AddForce(input, ForceMode2D.Impulse);
+
+
         if (!_sliding && !Rolling)
         {
             if (_hor > 0)
@@ -361,7 +371,6 @@ public class PlayerController : MonoBehaviour
             {
                 _rb2D.velocity = Vector2.zero;
             }
-
         }
     }
 
@@ -372,5 +381,12 @@ public class PlayerController : MonoBehaviour
     public bool Falling()
     {
         return _rb2D.velocity.y < 0 && !IsGround();
+    }
+    public void RotateWhileAttack()
+    {
+        if (_hor > 0)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        if (_hor < 0)
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
     }
 }
