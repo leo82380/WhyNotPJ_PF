@@ -12,15 +12,14 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Speed
     [Header("속도")]
-    [SerializeField]
+    [SerializeField, Range(0, 10)]
     private float _walkSpeed;
-    [SerializeField]
+    [SerializeField, Range(0, .1f)]
     private float _airWalkSpeed;
-    [SerializeField]
+    [SerializeField, Range(0, .1f)]
     private float _airRunSpeed;
-    [SerializeField]
+    [SerializeField, Range(0, 10)]
     private float _runSpeed;
-    [SerializeField]
     private float _speed;
     private float _maxSpeed;
     #endregion
@@ -31,12 +30,13 @@ public class PlayerController : MonoBehaviour
     private Transform _groundCheckTrans;
     [SerializeField]
     private float _groundCheckRadius;
-    [SerializeField]
+    [SerializeField, Range(0, 10)]
     private float _jumpForce;
     #endregion
     #region Component
     private Animator _anim;
     private Rigidbody2D _rb2D;
+    private CapsuleCollider2D cC;
     #endregion
     #region Attack
     private bool _attackBuffer;
@@ -55,8 +55,37 @@ public class PlayerController : MonoBehaviour
 
     private GameObject _attackCol;
 
-    [SerializeField]
+    [SerializeField, Range(0, 20)]
     private float _airAttackForce;
+    #endregion
+    #region Slide
+    private bool _sliding;
+    [Header("슬라이딩")]
+    [SerializeField, Range(0,10)]
+    private float _slideSpeed;
+    [SerializeField,Range(0, 2)]
+    private float _slideTime;
+    #endregion
+    #region Roll
+    [HideInInspector]
+    public bool Rolling;
+
+    [Header("구르기")]
+    private float _rollSpeed;
+    [SerializeField, Range(0, 10)]
+    private float _rollWalkSpeed;
+    [SerializeField, Range(0, 10)]
+    private float _rollRunSpeed;
+    #endregion
+
+
+    #region Slope
+    [SerializeField]
+    private float slopCheckDis;
+
+    private Vector2 colliderSize;
+    private Vector2 slopeNormalPerp;
+    private float slopeDownAngle;
     #endregion
 
     private void Awake()
@@ -65,7 +94,9 @@ public class PlayerController : MonoBehaviour
         _attackCol = transform.Find("AttackCol").gameObject;
         _anim = GetComponent<Animator>();
         _rb2D = GetComponent<Rigidbody2D>();
+        cC = GetComponent<CapsuleCollider2D>();
         _isMoveTrue = true;
+        colliderSize = cC.size;
 
     }
     private void Start()
@@ -81,6 +112,27 @@ public class PlayerController : MonoBehaviour
         Move();
         Anim();
         AttackCheck();
+        SlideCheck();
+        SlopCheck();
+    }
+    private void SlideCheck()
+    {
+        if (Input.GetKeyDown(KeyCode.C) && !_sliding && !Rolling && !_attacking && !_airAttacking &&Mathf.Abs (_hor) >0)
+        {
+
+            _sliding = true;
+            _rb2D.AddForce((Vector2.right * transform.localScale.x )* _slideSpeed, ForceMode2D.Impulse);
+            _anim.SetBool("Sliding", true);
+            StartCoroutine(EndSlide());
+        }
+    }
+
+    IEnumerator EndSlide()
+    {
+        yield return new WaitForSeconds(_slideTime);
+        _sliding = false;
+        _anim.SetBool("Sliding", false);
+        _rb2D.velocity = new Vector2(_rb2D.velocity.x*.5f,_rb2D.velocity.y);
     }
     private void Attack()
     {
@@ -99,11 +151,11 @@ public class PlayerController : MonoBehaviour
 
                 AttackAnim(_attackNum);
             }
-            else if (!_airAttacking )
+            else if (!_airAttacking)
             {
 
-                    _airAttacking = true;
-                    AirAttackAnim();
+                _airAttacking = true;
+                AirAttackAnim();
 
             }
 
@@ -127,9 +179,29 @@ public class PlayerController : MonoBehaviour
             _comboPossible = false;
         }
     }
+
+    private void SlopCheck()
+    {
+        Vector2 checkPos = transform.position - new Vector3(0.0f, colliderSize.y / 2);
+
+        SlopeCheckVertical(checkPos);
+    }
+    private void SlopeCheckVertical(Vector2 checkPos)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, slopCheckDis, _groundCheckLayerMask);
+
+        if(hit)
+        {
+            slopeNormalPerp = Vector2.Perpendicular(hit.normal);
+
+            slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
+            Debug.DrawRay(hit.point, slopeNormalPerp, Color.green);
+
+        }
+    }
     private void AttackCheck()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Z) && !Rolling &&!_sliding)
         {
             if (_attackBufferCheck)
             {
@@ -143,11 +215,11 @@ public class PlayerController : MonoBehaviour
 
         }
     }
-    public void AirAttackReady()
+    public void AirAttackReady() //공중 공격에서 찍기 전에 잠깐 멈추고 잠깐 위로 올라가게 함.
     {
-        transform.DOMoveY(transform.position.y+.5f,.4f).SetEase(Ease.OutSine);
+        transform.DOMoveY(transform.position.y + .5f, .4f).SetEase(Ease.OutSine);
 
-          _airAttackReady = true;
+        _airAttackReady = true;
     }
     public void EnableAttackCol()
     {
@@ -165,7 +237,7 @@ public class PlayerController : MonoBehaviour
     {
         _anim.Play("AirAttacking");
     }
-    public void AirAttack()
+    public void AirAttack() //공중공격에서 찍기
     {
         _airAttackReady = false;
         _rb2D.AddForce(Vector2.down * _airAttackForce, ForceMode2D.Impulse);
@@ -204,27 +276,32 @@ public class PlayerController : MonoBehaviour
         _anim.SetBool("Falling", Falling());
         _anim.SetBool("IsGround", IsGround());
     }
-    public bool Falling()
-    {
-        return _rb2D.velocity.y < 0 && !IsGround();
-    }
+
     private void Move()
     {
         if (_airAttackReady) _rb2D.velocity = Vector2.zero;
-        if (!_isMoveTrue) return;
+        if (!_isMoveTrue || _sliding) return;
 
         _hor = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(_hor * _speed, 0);
-        if (_hor > 0)
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
-        if (_hor < 0)
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
-        _rb2D.AddForce(input, ForceMode2D.Impulse);
 
-        if (transform.localScale.x > 0 && _rb2D.velocity.x > _maxSpeed)
-            _rb2D.velocity = new Vector2(_maxSpeed, _rb2D.velocity.y);
-        if (transform.localScale.x < 0 && _rb2D.velocity.x < -_maxSpeed)
-            _rb2D.velocity = new Vector2(-_maxSpeed, _rb2D.velocity.y);
+        _rb2D.AddForce(input, ForceMode2D.Impulse);
+        if (!_sliding && !Rolling)
+        {
+            if (_hor > 0)
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            if (_hor < 0)
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            if (transform.localScale.x > 0 && _rb2D.velocity.x > _maxSpeed)
+                _rb2D.velocity = new Vector2(_maxSpeed, _rb2D.velocity.y);
+            if (transform.localScale.x < 0 && _rb2D.velocity.x < -_maxSpeed)
+                _rb2D.velocity = new Vector2(-_maxSpeed, _rb2D.velocity.y);
+        }
+        if(Rolling)
+        {
+            _rb2D.velocity = transform.right *transform.localScale.x * _rollSpeed;
+        }
+
         if (IsGround())
         {
 
@@ -244,10 +321,30 @@ public class PlayerController : MonoBehaviour
                 }
                 _maxSpeed = _speed;
             }
+            if (Input.GetKeyDown(KeyCode.X) && !Rolling)
+            {
+                _anim.SetTrigger("Roll");
+
+                if (_speed == _runSpeed)
+                {
+
+                    _rollSpeed = _rollRunSpeed;
+                }
+                if (_speed == _walkSpeed)
+                {
+                    _rollSpeed = _rollWalkSpeed;
+
+                }
+                Rolling = true;
+
+            }
             if (Input.GetButtonDown("Jump"))
             {
                 _anim.SetTrigger("Jump");
-                print(_speed);
+               if(Rolling)
+                {
+                    Rolling = false;
+                }
                 if (_speed == _runSpeed)
                 {
 
@@ -260,15 +357,20 @@ public class PlayerController : MonoBehaviour
                 }
                 _rb2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
             }
-            if (Input.GetButtonUp("Horizontal") || Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
+            if (!_sliding && (Input.GetButtonUp("Horizontal") || Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow)))
             {
                 _rb2D.velocity = Vector2.zero;
             }
 
         }
     }
+
     private bool IsGround()
     {
         return Physics2D.OverlapCircle(_groundCheckTrans.position, _groundCheckRadius, _groundCheckLayerMask);
+    }
+    public bool Falling()
+    {
+        return _rb2D.velocity.y < 0 && !IsGround();
     }
 }
