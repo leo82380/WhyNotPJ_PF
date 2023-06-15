@@ -61,9 +61,9 @@ public class PlayerController : MonoBehaviour
     #region Slide
     private bool _sliding;
     [Header("슬라이딩")]
-    [SerializeField, Range(0,10)]
+    [SerializeField, Range(0, 10)]
     private float _slideSpeed;
-    [SerializeField,Range(0, 2)]
+    [SerializeField, Range(0, 2)]
     private float _slideTime;
     #endregion
     #region Roll
@@ -78,16 +78,15 @@ public class PlayerController : MonoBehaviour
     private float _rollRunSpeed;
     #endregion
 
-
-    #region Slope
+    #region HP
+    private float hp;
     [SerializeField]
-    private float slopCheckDis;
-
-    private Vector2 colliderSize;
-    private Vector2 slopeNormalPerp;
-    private float slopeDownAngle;
+    private float maxHP;
     #endregion
 
+
+
+    private WeaponCollider weaponCollider;
     private void Awake()
     {
         _groundCheckTrans = transform.Find("GroundCheck").transform;
@@ -96,8 +95,8 @@ public class PlayerController : MonoBehaviour
         _rb2D = GetComponent<Rigidbody2D>();
         cC = GetComponent<CapsuleCollider2D>();
         _isMoveTrue = true;
-        colliderSize = cC.size;
-
+        weaponCollider = transform.GetComponentInChildren<WeaponCollider>();
+        weaponCollider.Damage = AttackPower;
     }
     private void Start()
     {
@@ -106,6 +105,7 @@ public class PlayerController : MonoBehaviour
         _attackBufferCheck = false;
         _attackBuffer = false;
         DisableAttackCol();
+        hp = maxHP;
     }
     private void Update()
     {
@@ -113,15 +113,15 @@ public class PlayerController : MonoBehaviour
         Anim();
         AttackCheck();
         SlideCheck();
-        SlopCheck();
+        //SlopCheck();
     }
     private void SlideCheck()
     {
-        if (Input.GetKeyDown(KeyCode.C) && !_sliding && !Rolling && !_attacking && !_airAttacking &&Mathf.Abs (_hor) >0)
+        if (Input.GetKeyDown(KeyCode.C) && !_sliding && !Rolling && !_attacking && !_airAttacking && Mathf.Abs(_hor) > 0)
         {
 
             _sliding = true;
-            _rb2D.AddForce((Vector2.right * transform.localScale.x )* _slideSpeed, ForceMode2D.Impulse);
+            _rb2D.AddForce((Vector2.right * transform.localScale.x) * _slideSpeed, ForceMode2D.Impulse);
             _anim.SetBool("Sliding", true);
             StartCoroutine(EndSlide());
         }
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(_slideTime);
         _sliding = false;
         _anim.SetBool("Sliding", false);
-        _rb2D.velocity = new Vector2(_rb2D.velocity.x*.5f,_rb2D.velocity.y);
+        _rb2D.velocity = new Vector2(_rb2D.velocity.x * .5f, _rb2D.velocity.y);
     }
     private void Attack()
     {
@@ -180,24 +180,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void SlopCheck()
+
+    public void ApplyDamage(float damage)
     {
-        Vector2 checkPos = transform.position - new Vector3(0.0f, colliderSize.y / 2);
-
-        SlopeCheckVertical(checkPos);
-    }
-    private void SlopeCheckVertical(Vector2 checkPos)
-    {
-        RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, slopCheckDis, _groundCheckLayerMask);
-
-        if(hit)
-        {
-            slopeNormalPerp = Vector2.Perpendicular(hit.normal);
-
-            slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
-            Debug.DrawRay(hit.point, slopeNormalPerp, Color.green);
-
-        }
+        _anim.SetTrigger("Hit");
+        hp -= maxHP;
     }
     private void AttackCheck()
     {
@@ -279,13 +266,15 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        _hor = Input.GetAxisRaw("Horizontal");
         if (_airAttackReady) _rb2D.velocity = Vector2.zero;
         if (!_isMoveTrue || _sliding) return;
 
-        _hor = Input.GetAxisRaw("Horizontal");
         Vector2 input = new Vector2(_hor * _speed, 0);
 
         _rb2D.AddForce(input, ForceMode2D.Impulse);
+
+
         if (!_sliding && !Rolling)
         {
             if (_hor > 0)
@@ -361,7 +350,6 @@ public class PlayerController : MonoBehaviour
             {
                 _rb2D.velocity = Vector2.zero;
             }
-
         }
     }
 
@@ -372,5 +360,12 @@ public class PlayerController : MonoBehaviour
     public bool Falling()
     {
         return _rb2D.velocity.y < 0 && !IsGround();
+    }
+    public void RotateWhileAttack()
+    {
+        if (_hor > 0)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        if (_hor < 0)
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
     }
 }

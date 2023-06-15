@@ -8,6 +8,7 @@ public class AirAttackLandBehaviour : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         CameraManager.Instance.CallShake();
+        TimeController.Instance.SetTimeFreeze(0, 0, .15f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
