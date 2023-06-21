@@ -9,7 +9,7 @@ public class Skeleton_Move : enemybace
     //SpriteRenderer sprite;
     //Transform playerpos;
     //PlayerController player;
-    CircleCollider2D attackCollider;
+
     //Rigidbody2D rigid;
 
     [Header("속도")]
@@ -17,32 +17,30 @@ public class Skeleton_Move : enemybace
     int rd;
     [Header("거리")]
     //[SerializeField] int far;
-    int hitCount;
+    //int hitCount;
     int nextMove;
     public int look = 1;
 
     bool isWalk;
-    bool isAttack;
-    bool isDead;
+    //bool isAttack;
+    //bool isDead;
     bool isMove;
     protected override void Awake()
     {
 
         base.Awake();
-        attackCollider = GetComponentInChildren<CircleCollider2D>();
 
     }
     void Start()
     {
         nextMove = 1;
-        hitCount = 3;
+        //hitCount = 3;
        // playerpos = FindObjectOfType<PlayerController>().transform;
         //player = FindObjectOfType<PlayerController>();
         //animator = GetComponent<Animator>();
         //sprite = GetComponent<SpriteRenderer>();
      
         //rigid = GetComponent<Rigidbody2D>();
-        attackCollider.enabled = false;
         StartCoroutine("Moving");
     }
     protected override void Update()
@@ -55,8 +53,9 @@ public class Skeleton_Move : enemybace
 
         Debug.DrawRay(frontVec, Vector3.down * 10, new Color(1, 0, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 10f, LayerMask.GetMask("Ground"));
-        if (rayHit.collider == null)
+        if (rayHit.collider == null && !isChasing)
         {
+        
             isWalk = false;
             look *= -1;
             dir = Vector2.right * look;
@@ -84,28 +83,28 @@ public class Skeleton_Move : enemybace
         }
         
     }
-    void DeadCheck()
-    {
-        hitCount--;
-        if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
-        {
-            if (transform.position.x < player.transform.position.x)
-            {
-                sprite.flipX = false;
-            }
-            else
-            {
-                sprite.flipX = true;
-            }
-        }
-        Debug.Log(hitCount);
-        Hit();
-        if(hitCount <= 0)
-        {
-            isDead = true;
-            Dead();
-        }
-    }
+    //void DeadCheck()
+    //{
+    //    hitCount--;
+    //    if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
+    //    {
+    //        if (transform.position.x < player.transform.position.x)
+    //        {
+    //            sprite.flipX = false;
+    //        }
+    //        else
+    //        {
+    //            sprite.flipX = true;
+    //        }
+    //    }
+    //    Debug.Log(hitCount);
+    //    Hit();
+    //    if(hitCount <= 0)
+    //    {
+    //        isDead = true;
+    //        Dead();
+    //    }
+    //}
     //void AttackCheck()
     //{
     //    if (Vector2.Distance(gameObject.transform.position, player.transform.position) <= far)
@@ -121,21 +120,16 @@ public class Skeleton_Move : enemybace
     //        }
     //    }
     //}
-    void Attack()
-    {
-        if (!isAttack)
-        {
-            animator.SetBool("isAttack", true);
-            attackCollider.enabled = true;
-            isAttack = true;
-        }
-    }
-    public void EndAttack()
-    {
-        attackCollider.enabled = false;
-        animator.SetBool("isAttack", false);
-        isAttack = false;
-    }
+    //void Attack()
+    //{
+    //    if (!isAttack)
+    //    {
+    //        animator.SetBool("isAttack", true);
+    //        attackCollider.enabled = true;
+    //        isAttack = true;
+    //    }
+    //}
+   
 
     void Walk()
     {
@@ -165,6 +159,7 @@ public class Skeleton_Move : enemybace
     }
     void Move(int direction, bool isLeft)
     {
+        if (isChasing) return;
         StartCoroutine("StopWalk");
         dir = Vector2.right * direction;
         sprite.flipX = isLeft;
@@ -216,7 +211,7 @@ public class Skeleton_Move : enemybace
     {
         if (collision.CompareTag("PlayerWeapon"))
         {
-            DeadCheck();
+            base.DeadCheck();
         }
     }
 }
