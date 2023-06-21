@@ -10,8 +10,8 @@ public class WeaponCollider : MonoBehaviour
     {
         if(collision.CompareTag("Enemy"))
         {
-            //Enemybase enemybase = collision.GetComponent<Enemybase>(); 적의 스크립트에 부모 상속인 스크립트
-            //enemybase.ApplyDamage(Damage);
+            enemybace enemybase = collision.GetComponent<enemybace>();
+            enemybase.ApplyDamage(Damage);
         }
         if(collision.CompareTag("Player"))
         {

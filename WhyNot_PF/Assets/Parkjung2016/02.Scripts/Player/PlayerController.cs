@@ -95,8 +95,8 @@ public class PlayerController : MonoBehaviour
         _rb2D = GetComponent<Rigidbody2D>();
         cC = GetComponent<CapsuleCollider2D>();
         _isMoveTrue = true;
-        weaponCollider = transform.GetComponentInChildren<WeaponCollider>();
-        weaponCollider.Damage = AttackPower;
+        //weaponCollider = transform.GetComponentInChildren<WeaponCollider>();
+        //weaponCollider.Damage = AttackPower;
     }
     private void Start()
     {
