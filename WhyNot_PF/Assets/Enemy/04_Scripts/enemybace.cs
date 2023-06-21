@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public  enum State
+public enum State
 {
     IDLE,
     CHASE,
@@ -15,6 +15,7 @@ public class enemybace : MonoBehaviour
     protected Vector3 dir;
     protected Animator animator;
     protected SpriteRenderer sprite;
+    protected Transform scale;
     protected PlayerController player;
     protected Collider2D attackCollider;
     protected Rigidbody2D rigid;
@@ -27,14 +28,14 @@ public class enemybace : MonoBehaviour
     [SerializeField]
     protected int attackFar;
     protected bool isAttacking;
-    protected float hp;
+    protected float hp = 5;
     protected bool isDead;
     protected bool isChasing;
     public float HP
     {
         get => hp;
 
-        set 
+        set
         {
             hp = value;
             //if (hp <= 0)
@@ -50,13 +51,14 @@ public class enemybace : MonoBehaviour
         animator = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        scale = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody2D>();
         attackCollider.enabled = false;
     }
     protected virtual void Update()
     {
         transform.position += dir * Time.deltaTime * speed;
-        
+
         AttackCheck();
     }
     bool PlayerPos(float dis)
@@ -65,20 +67,26 @@ public class enemybace : MonoBehaviour
         {
             if (dis == far)
             {
-            dir = (player.transform.position - transform.position).normalized;
-            isChasing = true;
+                dir = (player.transform.position - transform.position).normalized;
+                isChasing = true;
 
             }
             if (transform.position.x < player.transform.position.x)
             {
-                sprite.flipX = false;
+                scale.localScale = new Vector3(2, 2, 2);
             }
             else
             {
-                sprite.flipX = true;
+                scale.localScale = new Vector3(-2, 2, 2);
             }
             return true;
         }
+        else
+             if (dis == far)
+        {
+            isChasing = false;
+
+        }   
         return false;
     }
     void Move()
@@ -91,19 +99,16 @@ public class enemybace : MonoBehaviour
     {
         if (!isAttacking)
         {
-            
+
             if (PlayerPos(attackFar))
             {
                 print(2);
                 animator.SetTrigger("isAttack");
-
-
-            isAttacking = true;
+                isAttacking = true;
             }
             else
             {
-            Move();
-
+                Move();
             }
             //attackcollider.enabled = true;
         }
@@ -139,5 +144,10 @@ public class enemybace : MonoBehaviour
     {
         Hit();
         hp -= Damage;
+        print(hp);
+        if (hp <= 0)
+        {
+            DestoryEnemy();
+        }
     }
 }
