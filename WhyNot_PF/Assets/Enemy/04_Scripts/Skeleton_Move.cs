@@ -49,7 +49,6 @@ public class Skeleton_Move : enemybace
        
         //AttackCheck();
 
-        Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
         Vector2 frontVec = new Vector2(rigid.position.x + transform.localScale.x, rigid.position.y);
 
         Debug.DrawRay(frontVec, Vector3.down * 10, new Color(1, 0, 0));
