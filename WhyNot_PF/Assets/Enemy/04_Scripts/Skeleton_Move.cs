@@ -49,19 +49,28 @@ public class Skeleton_Move : enemybace
        
         //AttackCheck();
 
-        Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);
+        Vector2 frontVec = new Vector2(rigid.position.x + transform.localScale.x, rigid.position.y);
 
         Debug.DrawRay(frontVec, Vector3.down * 10, new Color(1, 0, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(frontVec, Vector3.down, 10f, LayerMask.GetMask("Ground"));
-        if (rayHit.collider == null && !isChasing)
+        if (rayHit.collider == null)
         {
-        
+        if (isChasing)
+            {
+                dir = Vector3.zero;
+                isWalk = false;
+            }
+        else
+            {
+
             isWalk = false;
             look *= -1;
             dir = Vector2.right * look;
-            sprite.flipX = !sprite.flipX;
+            //sprite.flipX = !sprite.flipX;
+            scale.localScale = new Vector3(scale.localScale.x * -1, 2);
             animator.SetBool("isWalk", true);
             nextMove = look;
+            }
         }
     }
     
@@ -162,7 +171,15 @@ public class Skeleton_Move : enemybace
         if (isChasing) return;
         StartCoroutine("StopWalk");
         dir = Vector2.right * direction;
-        sprite.flipX = isLeft;
+        // sprite.flipX = isLeft;
+        if (isLeft)
+        {
+            scale.localScale = new Vector3(2, 2, 2);
+        }
+        else
+        {
+            scale.localScale = new Vector3(-2, 2, 2);
+        }
         animator.SetBool("isWalk", true);
         nextMove = direction;
     }
@@ -186,26 +203,21 @@ public class Skeleton_Move : enemybace
 
     void Rect()
     {
-        animator.SetBool("isRect", true);
-        Invoke("EndRect", 0.7f);
-    }
-    void EndRect()
-    {
-        animator.SetBool("isRect", false);
+        animator.SetTrigger("isRect");
     }
 
-    void Dead()
-    {
-        if (isDead == true)
-        {
-            animator.SetTrigger("OnDie");
-            dir = Vector3.zero;
-        }
-    }
-    public void SkeletonDie()
-    {
-        Destroy(gameObject);
-    }
+    //void Dead()
+    //{
+    //    if (isDead == true)
+    //    {
+    //        animator.SetTrigger("OnDie");
+    //        dir = Vector3.zero;
+    //    }
+    //}
+    //public void SkeletonDie()
+    //{
+    //    Destroy(gameObject);
+    //}
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
