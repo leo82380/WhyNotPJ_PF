@@ -14,7 +14,6 @@ public class enemybace : MonoBehaviour
     State state;
     protected Vector3 dir;
     protected Animator animator;
-    protected SpriteRenderer sprite;
     protected Transform scale;
     protected PlayerController player;
     protected Collider2D attackCollider;
@@ -49,7 +48,6 @@ public class enemybace : MonoBehaviour
     {
         attackCollider = GetComponentInChildren<CircleCollider2D>();
         animator = GetComponent<Animator>();
-        sprite = GetComponent<SpriteRenderer>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         scale = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody2D>();
