@@ -27,6 +27,7 @@ public class enemybace : MonoBehaviour
     [SerializeField]
     protected int attackFar;
     protected bool isAttacking;
+    [SerializeField]
     protected float hp = 5;
     protected bool isDead;
     protected bool isChasing;
@@ -34,15 +35,8 @@ public class enemybace : MonoBehaviour
     {
         get => hp;
 
-        set
-        {
-            hp = value;
-            //if (hp <= 0)
-            //{
-            //    isDead = true;
-            //    Die(3);
-            //}
-        }
+        set => hp = value;
+        
     }
     protected virtual void Awake()
     {
@@ -51,6 +45,7 @@ public class enemybace : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         scale = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody2D>();
+        animator.SetBool("isWalk", false);
         attackCollider.enabled = false;
     }
     protected virtual void Update()
@@ -67,7 +62,6 @@ public class enemybace : MonoBehaviour
             {
                 dir = (player.transform.position - transform.position).normalized;
                 isChasing = true;
-
             }
             if (transform.position.x < player.transform.position.x)
             {
@@ -79,12 +73,14 @@ public class enemybace : MonoBehaviour
             }
             return true;
         }
-        else
-             if (dis == far)
+        else if (dis == far)
         {
             isChasing = false;
-
         }   
+        else if (Vector3.Distance(gameObject.transform.position, player.transform.position) > dis)
+        {
+            return false;
+        }
         return false;
     }
     void Move()
@@ -97,18 +93,19 @@ public class enemybace : MonoBehaviour
     {
         if (!isAttacking)
         {
-
             if (PlayerPos(attackFar))
             {
                 print(2);
+                attackCollider.enabled = true;
                 animator.SetTrigger("isAttack");
                 isAttacking = true;
             }
             else
             {
                 Move();
+                EndAttack();
             }
-            //attackcollider.enabled = true;
+            
         }
     }
 
@@ -123,29 +120,30 @@ public class enemybace : MonoBehaviour
         Hit();
     }
 
-    void Die(float time)
+    void Die()
     {
         PlayerPos(far);
         animator.SetTrigger("Die");
-        Invoke("DestoryEnemy", time);
+        StartCoroutine(DestoryEnemy(3));
     }
     public void EndAttack()
     {
         attackCollider.enabled = false;
         isAttacking = false;
     }
-    void DestoryEnemy()
+    IEnumerator DestoryEnemy(float time)
     {
+        yield return new WaitForSeconds(time);
         Destroy(gameObject);
     }
     public void ApplyDamage(float Damage)
     {
         Hit();
         hp -= Damage;
-        print(hp);
+        print("³²Àº hp " + hp);
         if (hp <= 0)
         {
-            DestoryEnemy();
+            Die();
         }
     }
 }

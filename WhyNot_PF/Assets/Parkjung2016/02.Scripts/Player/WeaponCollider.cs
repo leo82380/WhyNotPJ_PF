@@ -12,6 +12,7 @@ public class WeaponCollider : MonoBehaviour
         {
             enemybace enemybase = collision.GetComponent<enemybace>();
             enemybase.ApplyDamage(Damage);
+            Debug.Log(Damage);
         }
         if(collision.CompareTag("Player"))
         {

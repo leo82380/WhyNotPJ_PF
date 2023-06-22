@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 8136768084226976503}
   m_Layer: 6
   m_Name: Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -187,8 +187,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  far: 10
+  far: 8
   attackFar: 3
+  hp: 20
   look: 1
 --- !u!50 &8136768084226976503
 Rigidbody2D:

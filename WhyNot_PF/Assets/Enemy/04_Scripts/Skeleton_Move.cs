@@ -68,7 +68,7 @@ public class Skeleton_Move : enemybace
             dir = Vector2.right * look;
             //sprite.flipX = !sprite.flipX;
             scale.localScale = new Vector3(scale.localScale.x * -1, 2);
-            animator.SetBool("isWalk", true);
+            //animator.SetBool("isWalk", true);
             nextMove = look;
             }
         }
@@ -180,7 +180,7 @@ public class Skeleton_Move : enemybace
         {
             scale.localScale = new Vector3(-2, 2, 2);
         }
-        animator.SetBool("isWalk", true);
+        //animator.SetBool("isWalk", true);
         nextMove = direction;
     }
     IEnumerator StopWalk()
