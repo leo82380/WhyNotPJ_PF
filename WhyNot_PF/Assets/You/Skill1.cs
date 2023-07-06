@@ -11,8 +11,8 @@ public class Skill1 : MonoBehaviour
     }
     void Start()
     {
-        playerImage.DOColor(Color., 0.5f);
-        
+        playerImage.DOColor(Color.white, 0.5f);
+
     }
     public void delete()
     {
@@ -21,5 +21,5 @@ public class Skill1 : MonoBehaviour
     }
 
 
-    
+
 }
