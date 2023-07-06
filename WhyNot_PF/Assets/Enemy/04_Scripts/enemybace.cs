@@ -17,6 +17,7 @@ public class enemybace : MonoBehaviour
     protected Transform scale;
     protected PlayerController player;
     protected Collider2D attackCollider;
+    protected Collider2D defaultCollider;
     protected Rigidbody2D rigid;
     [Header("속도")]
     [SerializeField]
@@ -40,8 +41,9 @@ public class enemybace : MonoBehaviour
     }
     protected virtual void Awake()
     {
-        attackCollider = GetComponentInChildren<CircleCollider2D>();
+        attackCollider = transform.GetChild(0).GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
+        defaultCollider = GetComponent<Collider2D>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         scale = GetComponent<Transform>();
         rigid = GetComponent<Rigidbody2D>();
@@ -50,6 +52,7 @@ public class enemybace : MonoBehaviour
     }
     protected virtual void Update()
     {
+        dir.y = 0;
         transform.position += dir * Time.deltaTime * speed;
 
         AttackCheck();
@@ -61,6 +64,7 @@ public class enemybace : MonoBehaviour
             if (dis == far)
             {
                 dir = (player.transform.position - transform.position).normalized;
+                
                 isChasing = true;
             }
             if (transform.position.x < player.transform.position.x)
@@ -117,11 +121,11 @@ public class enemybace : MonoBehaviour
     protected virtual void DeadCheck()
     {
         PlayerPos(far);
-        Hit();
     }
 
     void Die()
     {
+        speed = 0;
         PlayerPos(far);
         animator.SetTrigger("Die");
         StartCoroutine(DestoryEnemy(3));
@@ -140,9 +144,12 @@ public class enemybace : MonoBehaviour
     {
         Hit();
         hp -= Damage;
-        print("남은 hp " + hp);
+        print($"<color=black>{gameObject.name}</color> 남은 hp:  {hp}");
         if (hp <= 0)
         {
+            print($"<color=black>{gameObject.name}</color> 죽음");
+            defaultCollider.enabled = false;
+            rigid.gravityScale = 0;
             Die();
         }
     }
