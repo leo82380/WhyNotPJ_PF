@@ -2,48 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Necromancer_Controller : MonoBehaviour
+public class Necromancer_Controller : enemybace
 {
-    Animator necro_Anime;
     SpriteRenderer necro_Sprite;
-    PlayerController player;
-    void Start()
+    protected override void Awake()
     {
-        necro_Anime = GetComponent<Animator>();
-        necro_Sprite = GetComponent<SpriteRenderer>();
-        player = FindObjectOfType<PlayerController>();
-        
+        base.Awake();
     }
-    private void Update()
+    protected override void Update()
     {
-        int rd = Random.Range(0, 100);
-        if (rd < 50)
+        base.Update();
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("PlayerWeapon"))
         {
-            StartCoroutine(Move(1));
-        }
-        else
-        {
-            StartCoroutine(Move(-1));
+            base.DeadCheck();
         }
     }
-    IEnumerator Move(int look)
+    void Attack1()
     {
-        while (true)
-        {
-            Vector3 dir = new Vector3();
-            if (look == 1)
-            {
-                necro_Sprite.flipX = false;
-                dir = Vector3.right;
-            }
-            else if (look == -1)
-            {
-                necro_Sprite.flipX = true;
-                dir = Vector3.left;
-            }
-            transform.position += dir * Time.deltaTime;
-            yield return null;
-        }
+        base.animator.SetBool("isAttack1", true);
+        base.animator.SetTrigger("isAttack");
     }
-
-}
+    void Attack2()
+    {
+        base.animator.SetBool("isAttack2", true);
+        base.animator.SetTrigger("isAttack");
+    }
+    }
