@@ -82,6 +82,19 @@ public class PlayerController : MonoBehaviour
     private float hp;
     [SerializeField]
     private float maxHP;
+
+    public float HP
+    {
+        get => hp;
+        set
+        {
+            hp = Mathf.Clamp(value, 0, maxHP);
+            if (hp <= 0)
+            {
+                print("Á×À½");
+            }
+        }
+    }
     #endregion
 
 
@@ -114,6 +127,14 @@ public class PlayerController : MonoBehaviour
         AttackCheck();
         SlideCheck();
         //SlopCheck();
+    }
+
+    private void SkillInput()
+    {
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            
+        }
     }
     private void SlideCheck()
     {
@@ -181,11 +202,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void ApplyDamage(float damage)
-    {
-        _anim.SetTrigger("Hit");
-        hp -= maxHP;
-    }
+   
     private void AttackCheck()
     {
         if (Input.GetKeyDown(KeyCode.Z) && !Rolling &&!_sliding)
@@ -255,6 +272,12 @@ public class PlayerController : MonoBehaviour
             Attack();
         }
 
+    }
+
+    public void ApplyDamage(float Dam)
+    {
+        _anim.Play("Hit");
+        HP -= Dam;
     }
     private void Anim()
     {
