@@ -1287,7 +1287,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413225564}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.105040856, y: -0.14999002, z: -9.970732}
+  m_LocalPosition: {x: -0.105029434, y: -0.14999002, z: -9.970732}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1659,7 +1659,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2916747186225621049, guid: b115e36a79637194ea56236ede656a53, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2916747186225621049, guid: b115e36a79637194ea56236ede656a53, type: 3}
       propertyPath: m_TagString
@@ -1725,6 +1725,10 @@ PrefabInstance:
     - target: {fileID: 2315365005914666210, guid: 49b0e4364e5188f46838aacf33944234, type: 3}
       propertyPath: m_Name
       value: Pet
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315365005914666210, guid: 49b0e4364e5188f46838aacf33944234, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2315365005914666212, guid: 49b0e4364e5188f46838aacf33944234, type: 3}
       propertyPath: m_Color.b
